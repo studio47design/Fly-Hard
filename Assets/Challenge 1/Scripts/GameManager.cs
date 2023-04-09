@@ -9,9 +9,11 @@ public class GameManager : MonoBehaviour
 {
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI gameOverText;
+    public TextMeshProUGUI highScoreText;
     private int score;
     public bool isGameActive;
     public Button restartButton;
+    public Button exitButton;
 
     // Start is called before the first frame update
     void Start()
@@ -31,18 +33,35 @@ public class GameManager : MonoBehaviour
     public void UpdateScore(int scoreToAdd)
     {
         score += scoreToAdd;
-        scoreText.text = "Score: " + score;
+        scoreText.text = $"{MainManager.Instance.GetName()} - Score: {score}";
+
+        if (score > (MainManager.Instance.GetHighScore()))
+        {
+            MainManager.Instance.SetHighScore($"Highscore - {MainManager.Instance.GetName()}: {score}", score);
+            highScoreText.text = MainManager.Instance.GetHighScoreString();
+
+        }
+        else return;
+
     }
 
     public void GameOver()
     {
+        MainManager.Instance.SaveHighScore();
         gameOverText.gameObject.SetActive(true);
         isGameActive = false;
         restartButton.gameObject.SetActive(true);
+        exitButton.gameObject.SetActive(true);
+
     }
 
     public void RestartGame()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void ExitGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
     }
 }
